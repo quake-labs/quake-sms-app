@@ -9,6 +9,7 @@ twilio = "*"
 requests = "*"
 python-decouple = "*"
 uszipcode = "*"
+gunicorn = "*"
 
 [dev-packages]
 pylint = "*"
