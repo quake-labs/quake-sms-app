@@ -5,8 +5,10 @@ import json
 from twilio.twiml.messaging_response import MessagingResponse, Message
 from datetime import datetime
 from uszipcode import SearchEngine
+import logging
 
-
+route = '.'.join(['api.app', __name__.strip('api.')])
+routelogger = logging.getLogger(route)
 main_routes = Blueprint("main_routes", __name__)
 search = SearchEngine(simple_zipcode=True)
 
@@ -56,17 +58,19 @@ For more info visit 👉 https: // quake-ds-app.herokuapp.com
 @main_routes.route("/")
 def get_home():
     message = {"message": "SMS API is working"}
+    routelogger.info(f"[ROUTE] / called, {message}")
     return jsonify(message)
 
 
 @main_routes.route("/sms", methods=["POST"])
 def inbound_sms():
     # Grab the text from the received message.
+    routelogger.info("[ROUTE] /sms called")
     zipcode = request.form['Body'].strip()
-
+    routelogger.info(f"Inboud SMS message - {zipcode}")
     # Generate a TwiML Response object with the message we want to send.
     twiml_resp = MessagingResponse()
     msg = generate_message(zipcode)
+    routelogger.info(f"Outbout SMS response - {msg}")
     twiml_resp.message(msg)
-    print(str(twiml_resp))
     return str(twiml_resp)
