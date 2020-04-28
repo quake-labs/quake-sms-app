@@ -8,12 +8,13 @@ class Config:
     ACCOUNT_SID = config("ACCOUNT_SID")
     AUTH_TOKEN = config("AUTH_TOKEN")
     TWILIO_PHONE_NUMBER = config("TWILIO_PHONE_NUMBER")
+
+    # endpoint
+    QUAKE_API_URL = config("QUAKE_API_URL").rstrip("/")
     print(ACCOUNT_SID)
     print(AUTH_TOKEN)
     print(TWILIO_PHONE_NUMBER)
-    # endpoint
-    QUAKE_API_URL = config("QUAKE_API_URL").rstrip("/")
-
+    print(QUAKE_API_URL)
     # routes
     ZIP = "/zip"
 
