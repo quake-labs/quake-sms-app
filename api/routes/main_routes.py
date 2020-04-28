@@ -85,12 +85,10 @@ def inbound_web_sms():
     routelogger.info(f"[ROUTE] /web parsing {data}")
     phonenumber = data["phonenumber"].strip()
     zipcode = data["zipcode"].strip()
-    print(zipcode)
-    print(phonenumber)
+
     # Generate message
     msg = generate_message(zipcode)
     routelogger.info(f"[ROUTE] /web message generated {msg}")
-    print(msg)
     # Send message to user
     try:
         res = sms.send_message(msg, phonenumber)
