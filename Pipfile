@@ -10,6 +10,7 @@ requests = "*"
 python-decouple = "*"
 uszipcode = "*"
 gunicorn = "*"
+flask-cors = "*"
 
 [dev-packages]
 pylint = "*"

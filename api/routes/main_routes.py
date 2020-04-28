@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint
-from api.config import config_
+from api.config import config_, sms
 import requests
 import json
 from twilio.twiml.messaging_response import MessagingResponse, Message
@@ -7,7 +7,7 @@ from datetime import datetime
 from uszipcode import SearchEngine
 import logging
 
-route = '.'.join(['api.app', __name__.strip('api.')])
+route = ".".join(["api.app", __name__.strip("api.")])
 routelogger = logging.getLogger(route)
 main_routes = Blueprint("main_routes", __name__)
 search = SearchEngine(simple_zipcode=True)
@@ -66,7 +66,7 @@ def get_home():
 def inbound_sms():
     # Grab the text from the received message.
     routelogger.info("[ROUTE] /sms called")
-    zipcode = request.form['Body'].strip()
+    zipcode = request.form["Body"].strip()
     routelogger.info(f"Inboud SMS message - {zipcode}")
     # Generate a TwiML Response object with the message we want to send.
     twiml_resp = MessagingResponse()
@@ -74,3 +74,34 @@ def inbound_sms():
     routelogger.info(f"Outbout SMS response - {msg}")
     twiml_resp.message(msg)
     return str(twiml_resp)
+
+
+@main_routes.route("/web", methods=["POST"])
+def inbound_web_sms():
+
+    # Parse phone number and zipcode
+    routelogger.info("[ROUTE] /web called")
+    data = request.get_json()
+    routelogger.info(f"[ROUTE] /web parsing {data}")
+    phonenumber = data["phonenumber"].strip()
+    zipcode = data["zipcode"].strip()
+    print(zipcode)
+    print(phonenumber)
+    # Generate message
+    msg = generate_message(zipcode)
+    routelogger.info(f"[ROUTE] /web message generated {msg}")
+    print(msg)
+    # Send message to user
+    try:
+        res = sms.send_message(msg, phonenumber)
+    except Exception as ex:
+        routelogger.warning(
+            "[ROUTE] /web error when trying to use twilio client to send message"
+        )
+        routelogger.warning(ex)
+        return {
+            "message": "Failure!, there was error on our end, please check back soon!"
+        }
+    routelogger.info("[ROUTE] /web twilio response: ")
+    routelogger.info(res.sid)
+    return {"message": "Success!, you should recieve a text from us soon."}
